@@ -57,4 +57,12 @@ data$Class <- gsub('L', 1, data$Class)
       geom_bar() +geom_text(stat='count', aes(label=..count..), vjust=-1)+
       xlab(input$fill)+labs(fill = input$fill),
   )
+  
+  ########## Bar rendering graph & table ##########
+  output$barGraph <- renderPlotly({
+    return(BuildBar(data, input$performance))
+  })
+  output$barTable <- renderDataTable({
+    return(BarTable(data, input$performance))
+  })
 })

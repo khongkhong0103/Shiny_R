@@ -274,46 +274,42 @@ dashboardPage(
                               )
                      )
               ),
-      tabItem(tabName ="map1",
+      tabItem(tabName ="map1", width="100%",
               titlePanel('Học sinh đến từ quốc gia nào có xu hướng đạt thành tích học tập trung bình cao nhất?'),
               #user input of activity
-              selectInput(inputId = "performance", 
-                          label = "Hiệu suất:", 
-                          choices = c("All","High Performance", "Middle Performance", "Low Performance"), 
-                          selected = "All"),
-              
-              
-              
               fluidRow(
                 #user input of gender
                 column(3,
                        selectInput(inputId = "performance",
                                    label = "Hiệu suất:", 
                                    choices = c("All","High Performance", "Middle Performance", "Low Performance"), 
-                                   selected = "All"),
-                                   selected = "Topic")
+                                   selected = "All")
                 )
                 ),
-              
-              
-              tabBox(id ="",width="100%",
+              tabBox(id ="",width="100%",height = "100%",
                      tabPanel("Biều đồ",
-                              h1("Biểu đồ")
+                              plotlyOutput('barGraph')
                               ),
-                     tabPanel("Biều đồ hộp"),
-                     tabPanel("Tóm tắt"),
-                     tabPanel("Bảng")
+                     tabPanel("Tổng kết",
+                              tags$br(),
+                              tags$p("Thông qua biểu đồ thanh chúng em có những câu hỏi sau:"),
+                              tags$ol(
+                                tags$li("Học sinh từ quốc gia nào tích cực tham gia các hoạt động học thuật hơn?"),
+                                tags$li("Sự tham gia hoạt động trong lớp cao hơn ảnh hưởng đến việc đạt được thành tích học tập như thế nào?")
+                              ),
+                              tags$p("Trục x trên biểu đồ thanh hiển thị Quốc tịch: Egypt, Iran, Iraq, Jordan, KW, lebanon, Lybia, Morocco, Palestine, SaudiArabia, Syria, Tunis, USA, and venzuela"),
+                              tags$p("Trục y trên biểu đồ thanh hiển thị Mức độ tham gia: Trung bình của lượt giơ tay,truy cập tài nguyên, xem thông báo,thảo luận nhóm"),
+                              tags$p("Biểu đồ thanh tổng hợp cho thấy mức độ tham gia của sinh viên ở mỗi quốc gia. Màu sắc khác nhau có nghĩa là mức độ hiệu suất. Bộ
+                                          chọn ở bên trái cho phép người dùng lọc học sinh theo từng cấp độ hiệu suất. "),
+                              tags$p("Quốc gia có thành tích học tập tốt nhất là Syria (khoảng 330 lần tham gia). Quốc gia có thành tích học tập kém nhất là SaudiArabia (khoảng 141 lần tham gia). ")
+                              ),
+                     tabPanel("Bảng", dataTableOutput("barTable"))
                      
                      )
               ),
       tabItem(tabName ="model",
               tabBox(id ="",width="100%",
-                     tabPanel("Biều đồ",
-                              h1("Biểu đồ")
-                              ),
-                     tabPanel("Biều đồ hộp"),
-                     tabPanel("Tóm tắt"),
-                     tabPanel("Bảng")
+                     
                      
                      )
               ),
