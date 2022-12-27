@@ -1,0 +1,48 @@
+
+# 2. Hồi quy Logistic(Logistic Regression)
+Phân tích hồi qui logistic là một kỹ thuật thống kê để xem xét mối liên hệ giữa biến độc lập (biến số hoặc biến phân loại) với biến phụ thuộc là biến nhị phân
+## Nhận dữ liệu
+```{r}
+library(tidyverse)
+setwd("D:/2. School/CuoiKi R 2")
+df <- read.csv(file='./data/xAPI-Edu-Data.csv')
+df <- select(df, -PlaceofBirth, -StageID, -SectionID, -Semester, -Relation, -ParentAnsweringSurvey,-GradeID,-Topic,-gender,  -ParentschoolSatisfaction,-NationalITy)
+```
+
+**Tạo thêm 1 cột mới để chỉ xem class có Phải là high không**
+```{r}
+df <- df %>%
+  add_column(ClassH = if_else(.$Class == "H", 1, 0))
+# head(df,30)
+```
+# chuẩn bị dữ liệu
+```{r}
+# the_data$Education <- as.factor(the_data$Education)
+library(caTools)
+set.seed(101) 
+sample <- sample.split(df$Class, SplitRatio = 0.70) # SplitRatio = percent of sample==TRUE
+# Training Data
+train = subset(df, sample == TRUE)
+
+# Testing Data
+test = subset(df, sample == FALSE)
+```
+
+
+# Xây dụng Model
+
+```{r}
+# model = glm(ClassH ~Discussion, family = binomial(logit), data = train)
+model = glm(ClassH ~Discussion, family = binomial(logit), data = train)
+summary(model)
+```
+```{r}
+test$predicted.ClassH = predict(model, newdata=test, type="response")
+table(test$ClassH, test$predicted.ClassH > 0.5)
+
+```
+
+Độ chính xác
+```{r}
+(92+7)/(92+7+9+36)
+```

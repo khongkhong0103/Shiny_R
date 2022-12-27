@@ -9,7 +9,8 @@
 
 library(shiny)
 library(shinydashboard)
-
+library(knitr)
+library(plotly)
 # Define UI for application that draws a histogram
 
 dashboardPage(
@@ -192,7 +193,7 @@ dashboardPage(
               ),
               tabBox(id ="",width="100%",
                      tabPanel("Biều đồ",
-                              plotlyOutput('scatterGraph'),
+                             plotlyOutput('scatterGraph'),
                               tags$p("**biểu đồ phân tán có thể không được hiển thị nếu không có sự kết hợp phù hợp của các yếu tố đã chọn**")
                               ),
                      tabPanel("Biều đồ hộp",
@@ -307,12 +308,41 @@ dashboardPage(
                      
                      )
               ),
-      tabItem(tabName ="model",
-              tabBox(id ="",width="100%",
-                     
-                     
-                     )
-              ),
+      tabItem( tabName = "model",
+               tabPanel("Tổng quan",
+                        tabPanel("Mô hình",
+                                 titlePanel('Mô hình'),
+                                 sidebarLayout(
+                                   sidebarPanel(
+                                     numericInput("VisITedResources","Visited Resources",value = 0,min=0,max=100),
+                                     numericInput("AnnouncementsView","Announcements View",value = 0,min=0,max=100),
+                                     numericInput("Discussion","Discussion",value = 0,min=0,max=100),
+                                     actionButton("click","Click", class = "btn-lg btn-success"),
+                                     tags$br(),
+                                     textOutput("out_text"),
+                                     #user input of activity
+                                     
+                                     
+                                   ),
+                                   mainPanel(
+                                     # tabPanel("Mô hình",
+                                     
+                                     #   includeHTML("Linear-Regression-Lecture.html")
+                                     #   # HTML(knitr::knit2html("Linear Regression Lecture.Rmd", fragment.only = TRUE))
+                                     
+                                     # )
+                                     fluidPage(
+                                       # includeHTML('Linear-Regression-Lecture.html')
+                                   #    HTML(markdown::markdownToHTML(knit('Linear Regression Lecture.Rmd', quiet = TRUE))),
+                                    #   HTML(markdown::markdownToHTML(knit('Logistic Regression.Rmd', quiet = TRUE))),
+                                       #HTML(markdown::markdownToHTML(knit('Decision trees.Rmd', quiet = TRUE)))
+                                     )
+                                     
+                                   )
+                                 )
+                        )
+               ) 
+               ),
       tabItem(tabName ="summary",
                        mainPanel( width = "100%",
                          tags$div(

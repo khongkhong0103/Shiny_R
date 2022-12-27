@@ -1,0 +1,34 @@
+# 5. SVM
+Máy vectơ hỗ trợ là một khái niệm trong thống kê và khoa học máy tính cho một tập hợp các phương pháp học có giám sát liên quan đến nhau để phân loại và phân tích hồi quy. SVM dạng chuẩn nhận dữ liệu vào và phân loại chúng vào hai lớp khác nhau. Do đó SVM là một thuật toán phân loại nhị phân.
+![](https://machinelearningcoban.com/assets/19_svm/svm4.png)
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(class)
+library(rpart)
+library(rpart.plot)
+library(e1071)
+library(caret)
+library(caTools)
+library(party)
+
+```
+```{r}
+setwd("D:/2. School/CuoiKi R 2")
+df <- read.csv(file='./data/xAPI-Edu-Data.csv')
+library(caTools)
+set.seed(101) 
+sample <- sample.split(df$gender, SplitRatio = 0.70) # SplitRatio = percent of sample==TRUE
+# Training Data
+train = subset(df, sample == TRUE)
+
+# Testing Data
+cv = subset(df, sample == FALSE)
+```
+
+```{r}
+svm.model <- svm(Class ~ ., data = train, kernel = "radial", cost = 10, gamma = 0.15)
+svm.predict <- predict(svm.model, cv)
+confusionMatrix(cv$Class, svm.predict)
+```

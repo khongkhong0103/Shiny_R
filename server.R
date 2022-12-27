@@ -65,4 +65,33 @@ data$Class <- gsub('L', 1, data$Class)
   output$barTable <- renderDataTable({
     return(BarTable(data, input$performance))
   })
+  
+  
+  #########################################################
+  ###########MÔ hình#######################################
+  
+  # Xây dưng mô hình chuân bị cho dự đoán
+  library(caTools)
+  df =data
+  set.seed(101) 
+  sample <- sample.split(df$gender, SplitRatio = 0.70) # SplitRatio = percent of sample==TRUE
+  # Training Data
+  train = subset(df, sample == TRUE)
+  model <- lm(raisedhands~VisITedResources+AnnouncementsView+Discussion, data=train)
+  
+  
+  observeEvent(input$click, {
+    formula <- reactive({
+      A <- input$VisITedResources
+      B <- input$AnnouncementsView
+      C <- input$Discussion
+      temp.test <- data.frame(VisITedResources=c(A),AnnouncementsView=c(B),Discussion=c(C))
+      predict(model,temp.test)
+      
+    })
+    output$out_text <- renderText({
+      isolate(formula())
+    }
+    )
+  })
 })

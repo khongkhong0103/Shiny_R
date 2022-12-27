@@ -1,0 +1,144 @@
+<h1>Hồi quy tuyến tính(Linear Regression Lecture)</h1>
+
+<p>Phân tích hồi quy tuyến tính là một phương pháp phân tích quan hệ giữa biến phụ thuộc Y với một hay nhiều biến độc lập X. Mô hình hóa sử dụng hàm tuyến tính. Các tham số của mô hình được ước lượng từ dữ liệu. Hồi quy tuyến tính được sử dụng rộng rãi trong thực tế do tính chất đơn giản hóa của hồi quy
+#Nhận dữ liệu</p>
+
+<pre><code class="r">setwd(&quot;D:/2. School/CuoiKi R 2&quot;)
+df &lt;- read.csv(file=&#39;./data/xAPI-Edu-Data.csv&#39;)
+head(df)
+</code></pre>
+
+<pre><code>##   gender NationalITy PlaceofBirth    StageID GradeID SectionID Topic Semester Relation raisedhands VisITedResources
+## 1      M          KW       KuwaIT lowerlevel    G-04         A    IT        F   Father          15               16
+## 2      M          KW       KuwaIT lowerlevel    G-04         A    IT        F   Father          20               20
+## 3      M          KW       KuwaIT lowerlevel    G-04         A    IT        F   Father          10                7
+## 4      M          KW       KuwaIT lowerlevel    G-04         A    IT        F   Father          30               25
+## 5      M          KW       KuwaIT lowerlevel    G-04         A    IT        F   Father          40               50
+## 6      F          KW       KuwaIT lowerlevel    G-04         A    IT        F   Father          42               30
+##   AnnouncementsView Discussion ParentAnsweringSurvey ParentschoolSatisfaction StudentAbsenceDays Class
+## 1                 2         20                   Yes                     Good            Under-7     M
+## 2                 3         25                   Yes                     Good            Under-7     M
+## 3                 0         30                    No                      Bad            Above-7     L
+## 4                 5         35                    No                      Bad            Above-7     L
+## 5                12         50                    No                      Bad            Above-7     M
+## 6                13         70                   Yes                      Bad            Above-7     M
+</code></pre>
+
+<h1>Làm sạch dữ liệu</h1>
+
+<pre><code class="r">any(is.na(df))
+</code></pre>
+
+<pre><code>## [1] FALSE
+</code></pre>
+
+<h1>Xây dụng mô hình</h1>
+
+<h3>Chia dữ liệu thành tập train và test</h3>
+
+<pre><code class="r">library(caTools)
+set.seed(101) 
+sample &lt;- sample.split(df$gender, SplitRatio = 0.70) # SplitRatio = percent of sample==TRUE
+# Training Data
+train = subset(df, sample == TRUE)
+
+# Testing Data
+test = subset(df, sample == FALSE)
+</code></pre>
+
+<h3>Training Model</h3>
+
+<pre><code class="r">model &lt;- lm(raisedhands~VisITedResources+AnnouncementsView+Discussion, data=train)
+summary(model)
+</code></pre>
+
+<pre><code>## 
+## Call:
+## lm(formula = raisedhands ~ VisITedResources + AnnouncementsView + 
+##     Discussion, data = train)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -57.994 -11.087   0.718  11.761  60.475 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        6.15564    2.37928   2.587   0.0101 *  
+## VisITedResources   0.44084    0.04088  10.783  &lt; 2e-16 ***
+## AnnouncementsView  0.40462    0.05247   7.711 1.47e-13 ***
+## Discussion         0.05388    0.04289   1.256   0.2099    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 19.48 on 332 degrees of freedom
+## Multiple R-squared:  0.6005, Adjusted R-squared:  0.5969 
+## F-statistic: 166.4 on 3 and 332 DF,  p-value: &lt; 2.2e-16
+</code></pre>
+
+<h3>Giải thích Model</h3>
+
+<p>Trong R, dùng hàm lm() dùng để ước tính tham số cho mô hình hồi quy tuyến tính bằng phương pháp bình phương tối thiểu. Cú pháp: lm(y∼x,data)</p>
+
+<p>Trong đó, y là biến phụ thuộc, x là biến tiên lượng hay còn gọi là biến độc lập. Theo bộ dữ liệu đang dùng thì biến phụ thuộc là raisedhands và biến độc lập là gồm 3 biến: VisITedResources+AnnouncementsView+Discussion</p>
+
+<p>Theo kết quả đưa ra, mô hình hồi quy sẽ là: <strong>raisedhands=6,15564+0,44084.VisITedResources+0,40462.AnnouncementsView+0,05388.Discussion</strong></p>
+
+<p>Residuals: Phần dư là sự khác biệt giữa các giá trị thực tế của biến mà bạn đang dự đoán và các giá trị được dự đoán từ hồi quy của bạn - y - ŷ.
+R-squared: Chỉ số để đánh giá mức độ phù hợp của mô hình, càng gần về 1 thì độ chính xác càng cao</p>
+
+<h3>Đánh giá mô hình</h3>
+
+<pre><code class="r">raisedhands.predictions &lt;- predict(model,test)
+results &lt;- cbind(raisedhands.predictions,test$raisedhands) 
+colnames(results) &lt;- c(&#39;pred&#39;,&#39;real&#39;)
+results &lt;- as.data.frame(results)
+
+to_zero &lt;- function(x){
+    if  (x &lt; 0){
+        return(0)
+    }else{
+        return(x)
+    }
+}
+
+results$pred &lt;- sapply(results$pred,to_zero)
+SSE = sum((results$pred - results$real)^2)
+SST = sum( (mean(df$raisedhands) - results$real)^2)
+
+R2 = 1 - SSE/SST
+R2
+</code></pre>
+
+<pre><code>## [1] 0.4834618
+</code></pre>
+
+<pre><code class="r">summary(model)$r.squared
+</code></pre>
+
+<pre><code>## [1] 0.6005123
+</code></pre>
+
+<pre><code class="r">summary(model)$adj.r.squared
+</code></pre>
+
+<pre><code>## [1] 0.5969025
+</code></pre>
+
+<pre><code class="r">temp.test &lt;- data.frame(VisITedResources=c(3),AnnouncementsView=c(6),Discussion=c(9))
+predict(model,temp.test)
+</code></pre>
+
+<pre><code>##        1 
+## 10.39079
+</code></pre>
+
+<pre><code class="r">tmp = 6.15564+0.44084*3+0.40462*6+0.05388*9
+tmp
+</code></pre>
+
+<pre><code>## [1] 10.3908
+</code></pre>
+
+<pre><code class="r"># Some code
+</code></pre>
+
